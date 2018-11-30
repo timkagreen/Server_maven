@@ -1,6 +1,5 @@
 package server;
 
-import java.io.PrintStream;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -10,7 +9,7 @@ public class FromDB {
     private static final String PASSWORD = "1002199Timka";
     public String name;
 
-    private static final String INSERT_NEW = "SELECT * FROM recipelist WHERE recipeIngredients LIKE ?";
+    private static final String SELECT = "select recipeName from recipelist where recipe_ID IN (select recipe_ID from ingred group by recipe_ID having count(1) = sum(ingredient in(?,?,?,?,?,?,?)))";
 
     Connection connection = null;
 
@@ -28,9 +27,16 @@ public class FromDB {
 
     public ArrayList<String> GetFromDB(String ingredient) {
         PreparedStatement preparedStatement;
+        String[] ingredients = ingredient.split(";");
         try {
-            preparedStatement = connection.prepareStatement(INSERT_NEW);
-            preparedStatement.setString(1, "%" + ingredient + "%");
+            preparedStatement = connection.prepareStatement(SELECT);
+            preparedStatement.setString(1, ingredients[0]);
+            preparedStatement.setString(2, ingredients[1]);
+            preparedStatement.setString(3, ingredients[2]);
+            preparedStatement.setString(4, ingredients[3]);
+            preparedStatement.setString(5, ingredients[4]);
+            preparedStatement.setString(6, ingredients[5]);
+            //preparedStatement.setString(7, ingredients[6]);
             ResultSet recipe = preparedStatement.executeQuery();
             ArrayList<String> names = new ArrayList<String>();
 

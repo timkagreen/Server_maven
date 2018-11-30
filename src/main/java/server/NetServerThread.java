@@ -12,6 +12,7 @@ public class NetServerThread {
             System.out.println("initialized");
 
 
+
             while (true) {
                 //ожидание клиента
                 Socket sock = serv.accept();
@@ -41,16 +42,16 @@ class ServerThread extends Thread {
 
     public void run() {
         String str;
+        ArrayList<String> recipe;
         try {
             FromDB db = new FromDB();
-            ArrayList<String> names;
-            while (!(str = is.readLine()).equals("quit")) {
-                names = db.GetFromDB(str);
-                for (String name:names) {
-                    //System.out.println(name);
-                    os.println(name);
-                }
-            }
+            str = is.readLine();
+
+            recipe = db.GetFromDB(str);
+
+            os.println(recipe);
+
+
         } catch (IOException e) {
             //если клиент не отвечает, соединение с ним разрывается
             System.out.println("Disconnect");
