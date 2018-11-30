@@ -9,9 +9,12 @@ public class FromDB {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "1002199Timka";
     public String name;
+    public int recipeID;
 
 
-    private static final String SELECT = "select recipeName,recipeInstruction from recipelist where recipe_ID IN (select recipe_ID from ingred group by recipe_ID having count(1) = sum(ingredient in(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)))";
+    private static final String SELECT = "select recipe_ID,recipeName,recipeInstruction from recipelist where recipe_ID IN (select recipe_ID from ingred group by recipe_ID having count(1) = sum(ingredient in(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)))";
+    private static final String SELECT_INGREDS = "select * from ingred where recipe_ID IN (?)";
+
 
     Connection connection = null;
 
@@ -35,7 +38,7 @@ public class FromDB {
         int j = ingreds.length;
 
         for (int i = 0; i < j; i++) {
-            ingredients.add(i,ingreds[i]);
+            ingredients.add(i, ingreds[i]);
         }
         for (int i = j; i < 20; i++) {
             ingredients.add(i, "");
@@ -47,17 +50,27 @@ public class FromDB {
             preparedStatement = connection.prepareStatement(SELECT);
 
             for (int i = 0; i < 20; i++) {
-                preparedStatement.setString(i+1, ingredients.get(i));
+                preparedStatement.setString(i + 1, ingredients.get(i));
             }
 
             ResultSet recipe = preparedStatement.executeQuery();
             ArrayList<String> names = new ArrayList<String>();
+            ArrayList<String> recipeIDS = new ArrayList<String>();
 
 
             while (recipe.next()) {
-                name =  recipe.getString("recipeName") + ";" + recipe.getString("recipeInstruction")  + ";";
+                preparedStatement = connection.prepareStatement(SELECT_INGREDS);
+                preparedStatement.setString(1, recipe.getString("recipe_ID"));
+                ResultSet ingredsForID = preparedStatement.executeQuery();
+                name = ";" + recipe.getString("recipeName") + ";" + recipe.getString("recipeInstruction") + ";";
+                while (ingredsForID.next()) {
+                    name += ingredsForID.getString("ingredient") + " " + ingredsForID.getString("quantity") + " ";
+                }
+                name += ";";
                 names.add(name);
             }
+
+
             return names;
         } catch (SQLException e) {
             e.printStackTrace();
