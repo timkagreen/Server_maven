@@ -12,8 +12,10 @@ public class FromDB {
     public int recipeID;
 
 
-    private static final String SELECT = "select recipe_ID,recipeName,recipeInstruction from recipelist where recipe_ID IN (select recipe_ID from ingred group by recipe_ID having count(1) = sum(ingredient in(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)))";
+    private static final String SELECT = "select recipe_ID,recipeName,recipeInstruction from recipelist where recipe_ID IN (select recipe_ID from ingred group by recipe_ID having count(1) = sum(ingredient in(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)))";
     private static final String SELECT_INGREDS = "select * from ingred where recipe_ID IN (?)";
+
+    private static final String[] permanentIngreds = new String[]{"Соль","Сахар","Подсолнечное масло","Сода","Разрыхлитель теста","Перец","Гашеная сода","Разрыхлитель","Вода","Ванилин","Ванильный сахар","Растительное масло"};
 
 
     Connection connection = null;
@@ -40,8 +42,11 @@ public class FromDB {
         for (int i = 0; i < j; i++) {
             ingredients.add(i, ingreds[i]);
         }
-        for (int i = j; i < 20; i++) {
-            ingredients.add(i, "");
+        for (int i = j; i < permanentIngreds.length + j; i++) {
+            ingredients.add(i, permanentIngreds[i-j]);
+        }
+        for (int i = permanentIngreds.length+j; i < 30; i++){
+            ingredients.add(i,"");
         }
 
 
@@ -49,7 +54,7 @@ public class FromDB {
 
             preparedStatement = connection.prepareStatement(SELECT);
 
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < 30; i++) {
                 preparedStatement.setString(i + 1, ingredients.get(i));
             }
 

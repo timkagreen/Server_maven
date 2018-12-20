@@ -46,11 +46,17 @@ class ServerThread extends Thread {
         try {
             FromDB db = new FromDB();
             str = is.readLine();
-
+            System.out.println(str);
             recipe = db.GetFromDB(str);
 
             os.println(recipe);
 
+
+            String[] recipes = recipe.toString().split(";");
+            for (int i = 0; i < recipes.length; i++) {
+                System.out.println("*************************************");
+                System.out.println(recipes[i]);
+            }
 
         } catch (IOException e) {
             //если клиент не отвечает, соединение с ним разрывается
