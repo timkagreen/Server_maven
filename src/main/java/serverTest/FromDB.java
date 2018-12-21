@@ -1,4 +1,4 @@
-package server;
+package serverTest;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -81,6 +81,10 @@ public class FromDB {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     public void CloseConnection() {
